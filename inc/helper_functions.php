@@ -125,3 +125,35 @@ function ec_save_metaboxes($post)
     update_post_meta($post_id, 'untcd_mb_token', $ec_token);
     update_post_meta($post_id, 'untcd_mb_validate', $ec_validate);
 }
+
+
+/**
+ * Register a category for post type 'token'
+ */
+function create_custom_taxonomies() 
+{
+
+    $labels = array(
+        'name'              => _x( 'Categorias', 'taxonomy general name', 'textdomain' ),
+        'singular_name'     => _x( 'Categoria', 'taxonomy singular name', 'textdomain' ),
+        'search_items'      => __( 'Procurar Categorias', 'textdomain' ),
+        'all_items'         => __( 'Todas as Categorias', 'textdomain' ),
+        'parent_item'       => __( 'Categoria Pai', 'textdomain' ),
+        'parent_item_colon' => __( 'Categoria Pai:', 'textdomain' ),
+        'edit_item'         => __( 'Editar Categoria', 'textdomain' ),
+        'update_item'       => __( 'Atualizar Categoria', 'textdomain' ),
+        'add_new_item'      => __( 'Adicionar nova Categoria', 'textdomain' ),
+        'new_item_name'     => __( 'Nova Categoria', 'textdomain' ),
+        'menu_name'         => __( 'Categoria', 'textdomain' ),
+    );
+ 
+    $args = array(
+        'hierarchical'      => false,
+        'labels'            => $labels,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'query_var'         => true,
+        'rewrite'           => array( 'slug' => 'category_token' ),
+    );
+    register_taxonomy( 'category', array('token'), $args);
+}
