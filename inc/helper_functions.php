@@ -63,3 +63,65 @@ function unityCode_cpt_token()
 }
 
 
+/**
+ * Meta boxes for Token's cpt
+ *  
+ * @link https://developer.wordpress.org/reference/functions/add_meta_box/
+ * @since 0.1.0
+ */
+global $post;
+
+function unityCode_mb_register()
+{
+    $post_type = 'token';
+
+    # Meta box Token
+    add_meta_box('untcd_mb_token', __('Token promocial', 'ec'), 'ec_render_token', $post_type);
+
+    # Meta box validate data
+    add_meta_box('untcd_mb_validate', __('Período de validade', 'ec'), 'ec_render_validade', $post_type);
+}
+
+/** RENDER TOKEN */
+function ec_render_token($post)
+{
+    $post_id    = $post->ID;
+    $curr_token = get_post_meta($post_id, 'untcd_mb_token', true);
+    ?>
+    <div class="">
+        <label for="untcd_mb_token">Token Promocional</label>
+        <input type="text" id="untcd_mb_token" class="<?php echo $post_id; ?>" name="untcd_mb_token" value="<?php echo ( $curr_token != '' ? $curr_token : '' ); ?>" <?php echo (!empty($curr_token) ? 'disabled' : ''); ?>>        
+    </div>
+    <?php    
+}
+
+/** RENDER VALIDATE */
+function ec_render_validade($post)
+{
+    $post_id        = $post->ID;
+    $curr_validate  = get_post_meta($post_id, 'untcd_mb_validate', true);
+    ?>
+    <div class="">
+        <label for="untcd_mb_validate">Validade do Token</label>
+        <input type="date" id="untcd_mb_validate" class="<?php echo $post_id; ?>" name="untcd_mb_validate" value="<?php echo ( !empty($curr_validate) ? $curr_token : '' ); ?>" <?php echo (!empty($curr_validate) ? 'disabled' : ''); ?>>        
+    </div>
+    <?php    
+}
+
+/** SAVE METABOXES */
+function ec_save_metaboxes($post)
+{
+    $post_id        = $post->ID;
+    // if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+    // {
+    //     return $post_id;
+    // }
+
+    #Pegar os valores a serem salvos via $_POST
+    $ec_token           = $_POST['untcd_mb_token'];
+    $ec_validate        = $_POST['untcd_mb_validate'];
+
+    #Update dos meta-campos
+    update_post_meta($post_id, 'untcd_mb_token', $ec_token);
+    update_post_meta($post_id, 'untcd_mb_validate', $ec_validate);
+}
