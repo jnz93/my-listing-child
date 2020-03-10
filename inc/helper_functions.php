@@ -1,4 +1,7 @@
 <?php
+global $post;
+$post_id = $post->ID;
+
 /**
  *  
  */
@@ -69,7 +72,6 @@ function unityCode_cpt_token()
  * @link https://developer.wordpress.org/reference/functions/add_meta_box/
  * @since 0.1.0
  */
-global $post;
 
 function unityCode_mb_register()
 {
@@ -103,19 +105,18 @@ function ec_render_validade($post)
     ?>
     <div class="">
         <label for="untcd_mb_validate">Validade do Token</label>
-        <input type="date" id="untcd_mb_validate" class="<?php echo $post_id; ?>" name="untcd_mb_validate" value="<?php echo ( !empty($curr_validate) ? $curr_token : '' ); ?>" <?php echo (!empty($curr_validate) ? 'disabled' : ''); ?>>        
+        <input type="date" id="untcd_mb_validate" class="<?php echo $post_id; ?>" name="untcd_mb_validate" value="<?php echo ( !empty($curr_validate) ? $curr_validate : '' ); ?>" <?php echo (!empty($curr_validate) ? 'disabled' : ''); ?>>        
     </div>
     <?php    
 }
 
 /** SAVE METABOXES */
-function ec_save_metaboxes($post)
+function ec_save_metaboxes($post_id)
 {
-    $post_id        = $post->ID;
-    // if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-    // {
-    //     return $post_id;
-    // }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
+    {
+        return $post_id;
+    }
 
     #Pegar os valores a serem salvos via $_POST
     $ec_token           = $_POST['untcd_mb_token'];
@@ -125,7 +126,6 @@ function ec_save_metaboxes($post)
     update_post_meta($post_id, 'untcd_mb_token', $ec_token);
     update_post_meta($post_id, 'untcd_mb_validate', $ec_validate);
 }
-
 
 /**
  * Register a category for post type 'token'
