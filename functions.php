@@ -1,6 +1,14 @@
 <?php
-add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
-function my_theme_enqueue_styles() 
-{
-    wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
-}
+/**
+ * Includes 
+ */
+include_once('inc/helper_functions.php');
+
+
+/**
+ * Add actions list
+ */
+add_action( 'wp_enqueue_scripts', 'unityCode_enqueue_styles_theme' );
+add_action( 'init', 'unityCode_cpt_token' );
+add_action( 'add_meta_boxes', 'unityCode_mb_register' );
+add_action( 'save_post', 'ec_save_metaboxes' );
