@@ -129,6 +129,8 @@ function ec_save_metaboxes($post)
 
 /**
  * Register a category for post type 'token'
+ * 
+ * @link https://developer.wordpress.org/reference/functions/register_taxonomy/
  */
 function create_custom_taxonomies() 
 {
@@ -155,5 +157,29 @@ function create_custom_taxonomies()
         'query_var'         => true,
         'rewrite'           => array( 'slug' => 'category_token' ),
     );
-    register_taxonomy( 'category', array('token'), $args);
+    register_taxonomy( 'category_token', array('token'), $args);
+}
+
+/**
+ * Set categories by categories
+ * 
+ * @link https://developer.wordpress.org/reference/functions/wp_set_post_terms/
+ */
+function set_custom_taxonomies_programmatically()
+{
+    $terms_to_insert    = get_terms('job_listing_category', array('hide_empty' => false));
+
+    foreach ($terms_to_insert as $term) :
+        $term_name  = $term->name;
+        $taxonomy   = 'category_token';
+        $args       = array(
+            'description'   => 'Criado automaticamente baseado nas categorias dos parceiros.',
+            'slug'          => $term->slug,
+        );
+
+        if ( !term_exists($term_name, $taxonomy) ) :
+            wp_insert_term($term_name, $taxonomy, $args);
+        endif;
+
+    endforeach;
 }
