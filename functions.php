@@ -21,3 +21,12 @@ add_action( 'update_custom_terms', 'set_custom_taxonomies_programmatically');
 if ( ! wp_next_scheduled( 'update_custom_terms' ) ) :
     wp_schedule_event( time(), 'twicedaily', 'update_custom_terms' );
 endif;
+
+
+/**
+ * Ajax functions hoooks
+ */
+// add the ajax fetch js
+add_action('wp_footer', 'ajax_fetch');
+add_action('wp_ajax_data_fetch_token', 'data_fetch_token');
+add_action('wp_ajax_nopriv_data_fetch_token','data_fetch_token');

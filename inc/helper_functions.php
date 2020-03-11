@@ -213,3 +213,48 @@ function form_check_token()
     // echo $teste;
 }
 add_shortcode('form_validate_token', 'form_check_token');
+
+function ajax_fetch()
+{?>
+    <script type="text/javascript">
+    function fetch()
+    {
+        jQuery.ajax({
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            type: 'post',
+            data: { 
+                action: 'data_fetch_token', 
+                token: jQuery('#check_token').val(), 
+                date: jQuery('#check_date').val(), 
+                id_partner: jQuery('#check_id_partner').val() 
+            },
+            success: function(data)
+            {
+                jQuery('#insert').html(data);
+            }
+        })
+    }    
+    </script>
+<?php
+}
+
+
+function data_fetch_token()
+{
+    $ajax_token         = esc_attr($_POST['token']);
+    $ajax_date          = esc_attr($_POST['date']);
+    $ajax_id_partner    = esc_attr($_POST['id_partner']);
+
+    $validate_token = validate_token($ajax_token, $ajax_date);
+
+    if ($validate_token == true) :
+        echo 'Token code: ' . $ajax_token . ' - validate: '. $ajax_date .'<br>';
+    else :
+        echo 'Token inválido';
+    endif;
+
+    // echo $ajax_token . '<br>';
+    // echo $ajax_date . '<br>';
+    // echo $ajax_id_partner . '<br>';
+    die();
+}
