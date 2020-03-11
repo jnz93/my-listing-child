@@ -258,3 +258,39 @@ function data_fetch_token()
     // echo $ajax_id_partner . '<br>';
     die();
 }
+
+
+/**
+ * function validate_token
+ * 
+ * @param $ajax_token, $ajax_date
+ * @return boolean
+ */
+function validate_token($ajax_token, $ajax_date)
+{
+    $args = array(
+        'post_type'     => 'token',
+        'post_status'   => 'publish',
+        'post_per_page' => -1,
+    );
+    $the_query = new WP_Query($args);
+
+    if ($the_query->have_posts()) :
+        while($the_query->have_posts()) :
+            $the_query->the_post();
+            $token_id   = get_the_ID();
+            $token_code = get_post_meta($token_id, 'untcd_mb_token', true);
+            $token_code_date = get_post_meta($token_id, 'untcd_mb_validate', true);
+            
+            if ($ajax_token === $token_code) :
+                if ($ajax_date === $token_code_date) :
+                    return true;
+                else :
+                    return false;
+                endif;
+            endif;
+        endwhile;
+        wp_reset_postdata();
+    endif;
+}
+ 
