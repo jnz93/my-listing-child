@@ -183,3 +183,33 @@ function set_custom_taxonomies_programmatically()
 
     endforeach;
 }
+
+/**
+ * Shortcode for checking token
+ * 
+ * @link https://codex.wordpress.org/Shortcode_API
+ */
+function form_check_token()
+{
+    ?>
+    <form action="" class="col-lg-4 center">
+        <div class="">
+            <label for="check_token">Token promocional</label>
+            <input type="text" name="check_token" id="check_token" placeholder="Token promocional">
+        </div>
+        <div class="">
+            <label for="check_date">Data de validação</label>
+            <input type="date" name="check_date" id="check_date" placeholder="Token promocional">
+        </div>
+        <div class="">
+            <label for="check_id_partner">ID do parceiro</label>
+            <input type="text" name="check_id_partner" id="check_id_partner" placeholder="Id do parceiro">
+        </div>
+        <button type="button" onclick="fetch()">Válidar o token</button>
+    </form>
+    <div id="insert"></div>
+    <?php
+    // $teste = get_post_meta('3562', 'untcd_mb_token', true);
+    // echo $teste;
+}
+add_shortcode('form_validate_token', 'form_check_token');
