@@ -259,7 +259,9 @@ function data_fetch_token()
     if (is_array($validate_token) && is_array($validate_partner)) :
 
         if ($validate_token['category'] === $validate_partner['category']) :
-            echo "Token válido!";
+            
+            echo "Token válido! <br>";
+            update_user_score();
         else :
             echo "Token inválido!";
         endif;
@@ -353,4 +355,14 @@ function validate_partner_by_id($ajax_id_partner)
         endwhile;
         wp_reset_postdata();
     endif;
+}
+
+function update_user_score()
+{
+    $user_id    = get_current_user_id();
+    $meta_key   = '_partner_score';
+    $curr_score = (int) get_user_meta($user_id, $meta_key, true);    
+    $new_score    = $curr_score + 1;
+
+    update_user_meta($user_id, $meta_key, $new_score, $curr_score);
 }
