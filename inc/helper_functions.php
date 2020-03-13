@@ -263,25 +263,34 @@ function ajax_fetch()
 function data_fetch_token()
 {
     $ajax_token         = esc_attr($_POST['token']);
-    $ajax_date          = esc_attr($_POST['date']);
     $ajax_id_partner    = esc_attr($_POST['id_partner']);
 
-    $validate_token     = validate_token($ajax_token, $ajax_date);
+    $validate_token     = validate_token($ajax_token);
     $validate_partner   = validate_partner_by_id($ajax_id_partner);
+    $validate_token_id  = $validate_token['id_token'];
 
     if (is_array($validate_token) && is_array($validate_partner)) :
 
-        if ($validate_token['category'] === $validate_partner['category']) :
+        if ($validate_token['category'] == $validate_partner['category']) :
+
+            if (check_partner_has_used_token($validate_token_id) == false) :
+                echo "Token validado com sucesso! <br>";
+                update_user_score();
+                update_partner_user_token($validate_token_id);
+            else : 
+                echo 'Token já foi utilizado pelo usuário <br>';
+            endif;
             
-            echo "Token válido! <br>";
-            update_user_score();
             get_meta_data_score();
+
         else :
-            echo "Token inválido!";
+
+            echo "Token inserido não existe, não faz parte da categoria elegível ou já expirou.";
+
         endif;
 
     else :
-        echo 'Token inválido';
+        echo 'Dados inválidos. <br>';
     endif;
     
     die();
@@ -374,8 +383,6 @@ function validate_partner_by_id($ajax_id_partner)
                 $data['category']       = $category;
 
                 return $data;
-            else :
-                return false;
             endif;
         endwhile;
         wp_reset_postdata();
