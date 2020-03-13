@@ -288,6 +288,44 @@ function validate_token($ajax_token, $ajax_date)
                 else :
                     return false;
                 endif;
+
+        endwhile;
+        wp_reset_postdata();
+    endif;
+}
+
+/**
+ * function validate_partner_by_id
+ * 
+ * @param $ajax_id_partner
+ * @return boolean
+ */
+function validate_partner_by_id($ajax_id_partner)
+{
+    $args = array(
+        'post_type'     => 'job_listing',
+        'post_status'   => 'publish',
+        'post_per_page' => -1,
+    );
+    $partners = new WP_Query($args);
+    $data       = array();
+    if ($partners->have_posts()) :
+        while ($partners->have_posts()) :
+            $partners->the_post();
+            $partner_id = get_the_ID();
+            $category   = '';
+            
+            $categories = get_the_terms($partner_id, 'job_listing_category');
+            foreach ($categories as $cat) :
+                $category = $cat->slug;
+            endforeach;
+
+            if ($ajax_id_partner == $partner_id) :
+
+                $data['partner_id']     = $partner_id;
+                $data['category']       = $category;
+
+                return $data;
             endif;
         endwhile;
         wp_reset_postdata();
