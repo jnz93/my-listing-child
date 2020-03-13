@@ -75,13 +75,17 @@ function unityCode_cpt_token()
 
 function unityCode_mb_register()
 {
-    $post_type = 'token';
+    $post_type          = 'token';
+    $type_membership    = 'wc_user_membership';
 
-    # Meta box Token
+    # Meta-boxes Token
     add_meta_box('untcd_mb_token', __('Token promocial', 'ec'), 'ec_render_token', $post_type);
-
-    # Meta box validate data
     add_meta_box('untcd_mb_validate', __('Período de validade', 'ec'), 'ec_render_validade', $post_type);
+
+    # Meta-boxes membership
+    // add_meta_box('untcd_mb_score', __('Pontuação do usuário', 'ec'), 'ec_render_score', $type_membership);
+    add_user_meta(13, '_partner_score', 0, );
+    
 }
 
 /** RENDER TOKEN */
@@ -106,6 +110,20 @@ function ec_render_validade($post)
     <div class="">
         <label for="untcd_mb_validate">Validade do Token</label>
         <input type="date" id="untcd_mb_validate" class="<?php echo $post_id; ?>" name="untcd_mb_validate" value="<?php echo ( !empty($curr_validate) ? $curr_validate : '' ); ?>" <?php echo (!empty($curr_validate) ? 'disabled' : ''); ?>>        
+    </div>
+    <?php    
+}
+
+
+/** RENDER SCORE */
+function ec_render_score($post)
+{
+    $post_id        = $post->ID;
+    $curr_validate  = get_post_meta($post_id, 'untcd_mb_score', true);
+    ?>
+    <div class="">
+        <label for="untcd_mb_score">Validade do Token</label>
+        <input type="number" id="untcd_mb_score" class="<?php echo $post_id; ?>" name="untcd_mb_score" value="<?php echo ( !empty($curr_validate) ? $curr_validate : '' ); ?>" disabled>        
     </div>
     <?php    
 }
@@ -262,6 +280,7 @@ function data_fetch_token()
             
             echo "Token válido! <br>";
             update_user_score();
+            get_meta_data_score();
         else :
             echo "Token inválido!";
         endif;
@@ -365,4 +384,13 @@ function update_user_score()
     $new_score    = $curr_score + 1;
 
     update_user_meta($user_id, $meta_key, $new_score, $curr_score);
+}
+
+function get_meta_data_score()
+{
+    $user_id    = get_current_user_id();
+    $meta_key   = '_partner_score';
+    $curr_score = get_user_meta($user_id, $meta_key, true);
+
+    echo 'Score Atual: ' . $curr_score . '<br>';
 }
