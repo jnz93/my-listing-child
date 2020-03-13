@@ -399,7 +399,7 @@ function update_partner_user_token($token_id)
     $curr_list  = get_user_meta($user_id, $meta_key, true);
     $new_list   = $curr_list . ',' . $token_id;
 
-    update_user_meta($user_id, $meta_key, $new_list, $curr_list);
+    update_user_meta($user_id, $meta_key, $new_list);
 }
 
 
@@ -409,10 +409,9 @@ function check_partner_has_used_token($token_id)
     $meta_key   = '_partner_token_used_list';
     
     $string_ids = get_user_meta($user_id, $meta_key, true);
+    $arr_ids    = explode(',', $string_ids);
 
-    $has_used   = strpos($string_ids, $token_id);
-
-    return $has_used; 
+    return in_array($token_id, $arr_ids); 
 }
 
 function get_meta_data_score()
