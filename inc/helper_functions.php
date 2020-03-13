@@ -397,6 +397,18 @@ function update_partner_user_token($token_id)
 }
 
 
+function check_partner_has_used_token($token_id)
+{
+    $user_id    = get_current_user_id();
+    $meta_key   = '_partner_token_used_list';
+    
+    $string_ids = get_user_meta($user_id, $meta_key, true);
+
+    $has_used   = strpos($string_ids, $token_id);
+
+    return $has_used; 
+}
+
 function get_meta_data_score()
 {
     $user_id    = get_current_user_id();
