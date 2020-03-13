@@ -209,11 +209,13 @@ function form_check_token()
     </form>
     <div id="insert"></div>
     <?php
-    // $teste = get_post_meta('3562', 'untcd_mb_token', true);
-    // echo $teste;
 }
 add_shortcode('form_validate_token', 'form_check_token');
 
+/**
+ * Função ajax_fetch()
+ * requisição Ajax, utilizando jQuery, para enviar os dados ao back end;
+ */
 function ajax_fetch()
 {?>
     <script type="text/javascript">
@@ -239,6 +241,12 @@ function ajax_fetch()
 }
 
 
+/**
+ * Função data_fetch_token()
+ * Dados Ajax são passados para as funções de validação
+ * 
+ * @return string
+ */
 function data_fetch_token()
 {
     $ajax_token         = esc_attr($_POST['token']);
@@ -268,7 +276,7 @@ function data_fetch_token()
  * function validate_token
  * 
  * @param $ajax_token, $ajax_date
- * @return array or false
+ * @return $data or false
  */
 function validate_token($ajax_token, $ajax_date)
 {
@@ -311,7 +319,7 @@ function validate_token($ajax_token, $ajax_date)
  * function validate_partner_by_id
  * 
  * @param $ajax_id_partner
- * @return boolean
+ * @return $data or false
  */
 function validate_partner_by_id($ajax_id_partner)
 {
@@ -339,6 +347,8 @@ function validate_partner_by_id($ajax_id_partner)
                 $data['category']       = $category;
 
                 return $data;
+            else :
+                return false;
             endif;
         endwhile;
         wp_reset_postdata();
