@@ -216,10 +216,6 @@ function form_check_token()
             <input type="text" name="check_token" id="check_token" placeholder="Token promocional">
         </div>
         <div class="">
-            <label for="check_date">Data de validação</label>
-            <input type="date" name="check_date" id="check_date" placeholder="Token promocional">
-        </div>
-        <div class="">
             <label for="check_id_partner">ID do parceiro</label>
             <input type="text" name="check_id_partner" id="check_id_partner" placeholder="Id do parceiro">
         </div>
@@ -244,8 +240,7 @@ function ajax_fetch()
             type: 'post',
             data: { 
                 action: 'data_fetch_token', 
-                token: jQuery('#check_token').val(), 
-                date: jQuery('#check_date').val(), 
+                token: jQuery('#check_token').val(),
                 id_partner: jQuery('#check_id_partner').val() 
             },
             success: function(data)
@@ -299,7 +294,7 @@ function data_fetch_token()
  * @param $ajax_token, $ajax_date
  * @return $data or false
  */
-function validate_token($ajax_token, $ajax_date)
+function validate_token($ajax_token)
 {
     $args = array(
         'post_type'     => 'token',
@@ -307,31 +302,42 @@ function validate_token($ajax_token, $ajax_date)
         'post_per_page' => -1,
     );
     $the_query = new WP_Query($args);
+
+    $date   = getdate();
+    $today  = $date['mon'] . '-' . $date['mday'] . '-' . $date['year'];
+    $day    = $date['mday'];
+    $month  = $date['mon'];
+    $year   = $date['year'];
+
     $data = array();
     if ($the_query->have_posts()) :
         while($the_query->have_posts()) :
             $the_query->the_post();
-            $token_id   = get_the_ID();
-            $token_code = get_post_meta($token_id, 'untcd_mb_token', true);
-            $token_code_date = get_post_meta($token_id, 'untcd_mb_validate', true);
+            $token_id           = get_the_ID();
+            $token_code         = get_post_meta($token_id, 'untcd_mb_token', true);
 
-            $categories     = get_the_terms($token_id, 'category_token');
-            $category       = '';
+            $token_code_date    = get_post_meta($token_id, 'untcd_mb_validate', true);
+            $token_code_date    = explode('-', $token_code_date);
+            $token_exp_day      = $token_code_date[2];
+            $token_exp_month    = $token_code_date[1];
+            $token_exp_year     = $token_code_date[0];
+
+            $categories         = get_the_terms($token_id, 'category_token');
+            $category           = '';
             foreach($categories as $cat) :
                 $category = $cat->slug;
             endforeach;
 
-            if ($ajax_token === $token_code && $ajax_date === $token_code_date) :
+            if ($ajax_token === $token_code && $day <= $token_exp_day && $month <= $token_exp_month && $year <= $token_exp_year) :
 
                 $data['id_token']   = $token_id;
                 $data['category']   = $category;
 
                 return $data;
-            else :
-                return false;
             endif;
-
+            return $token_code_date;
         endwhile;
+
         wp_reset_postdata();
     endif;
 }
