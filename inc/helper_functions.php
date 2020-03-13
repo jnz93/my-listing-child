@@ -386,6 +386,17 @@ function update_user_score()
     update_user_meta($user_id, $meta_key, $new_score, $curr_score);
 }
 
+function update_partner_user_token($token_id)
+{
+    $user_id    = get_current_user_id();
+    $meta_key   = '_partner_token_used_list';
+    $curr_list  = get_user_meta($user_id, $meta_key, true);
+    $new_list   = $curr_list . ',' . $token_id;
+
+    update_user_meta($user_id, $meta_key, $new_list, $curr_list);
+}
+
+
 function get_meta_data_score()
 {
     $user_id    = get_current_user_id();
