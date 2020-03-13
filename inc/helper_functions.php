@@ -245,17 +245,21 @@ function data_fetch_token()
     $ajax_date          = esc_attr($_POST['date']);
     $ajax_id_partner    = esc_attr($_POST['id_partner']);
 
-    $validate_token = validate_token($ajax_token, $ajax_date);
+    $validate_token     = validate_token($ajax_token, $ajax_date);
+    $validate_partner   = validate_partner_by_id($ajax_id_partner);
 
-    if ($validate_token == true) :
-        echo 'Token code: ' . $ajax_token . ' - validate: '. $ajax_date .'<br>';
+    if (is_array($validate_token) && is_array($validate_partner)) :
+
+        if ($validate_token['category'] === $validate_partner['category']) :
+            echo "Token válido!";
+        else :
+            echo "Token inválido!";
+        endif;
+
     else :
         echo 'Token inválido';
     endif;
-
-    // echo $ajax_token . '<br>';
-    // echo $ajax_date . '<br>';
-    // echo $ajax_id_partner . '<br>';
+    
     die();
 }
 
@@ -264,7 +268,7 @@ function data_fetch_token()
  * function validate_token
  * 
  * @param $ajax_token, $ajax_date
- * @return boolean
+ * @return array or false
  */
 function validate_token($ajax_token, $ajax_date)
 {
@@ -274,20 +278,29 @@ function validate_token($ajax_token, $ajax_date)
         'post_per_page' => -1,
     );
     $the_query = new WP_Query($args);
-
+    $data = array();
     if ($the_query->have_posts()) :
         while($the_query->have_posts()) :
             $the_query->the_post();
             $token_id   = get_the_ID();
             $token_code = get_post_meta($token_id, 'untcd_mb_token', true);
             $token_code_date = get_post_meta($token_id, 'untcd_mb_validate', true);
-            
-            if ($ajax_token === $token_code) :
-                if ($ajax_date === $token_code_date) :
-                    return true;
-                else :
-                    return false;
-                endif;
+
+            $categories     = get_the_terms($token_id, 'category_token');
+            $category       = '';
+            foreach($categories as $cat) :
+                $category = $cat->slug;
+            endforeach;
+
+            if ($ajax_token === $token_code && $ajax_date === $token_code_date) :
+
+                $data['id_token']   = $token_id;
+                $data['category']   = $category;
+
+                return $data;
+            else :
+                return false;
+            endif;
 
         endwhile;
         wp_reset_postdata();
@@ -331,4 +344,3 @@ function validate_partner_by_id($ajax_id_partner)
         wp_reset_postdata();
     endif;
 }
- 
